@@ -1,0 +1,144 @@
+"""
+In dieser Datei:
+1. Die exportierten Daten werden in ein Pandas dataframe umgewandelt.
+2. Die Daten werden nach relevanten Prozeduren gefiltert.
+    a. Alle Tuple, deren Prozedurentitel (COLNAME_PROZEDUR) nicht in relevant_ZBEFALL.csv enthalten ist, werden entfernt.
+       Tuple mit leerem Prozedurentitel werden dabei nicht entfernt.
+    b. Alle Befundtexte werden nach Schlüsselwörtern durchsucht (nur die ersten 6 nicht-leeren Zeilen).
+       Es werden nur diejenigen Tupel beibehalten, die mindestens eines der Schlüsselwörter (case-insensitive)
+       aus jeder der folgenden Listen enthalten:
+        1. 'ct', 'computertomographie', 'computertomografie', 'spiral', 'polytrauma'
+        2. 'km', 'kontrastmittel', 'PET'
+        3. 'thorax', 'koerperstamm', 'körperstamm', 'pulm', 'lunge', 'aorta', 'spiral', 'polytrauma', 'PET'
+3. Der Text in COLNAME_BEFUNDTEXT wird bei „Beurteilung:“ geteilt und der zweite Teil
+   wird in eine neue Spalte „assessment“ eingefügt.
+4. Die endgültige Tabelle wird optional als CSV exportiert.
+"""
+
+import pandas as pd
+import numpy as np
+import re
+
+from config import COLNAME_PROZEDUR, RAD_REPORTS_FILENAMES, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
+    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME
+from util_functions import check_columns, write_to_csv
+
+KEYWORD_ONEOF_LISTS = [
+    ["ct", "computertomographie", "computertomografie", "spiral", "polytrauma"],
+    ["km", "kontrastmittel", "PET"],
+    ["thorax", "koerperstamm", "körperstamm", "pulm", "lunge", "aorta", "spiral", "polytrauma", "PET"]
+]
+
+def check_for_keywords(text):
+    """
+    Checks if all specified keywords are present in the text (case-insensitive).
+    Handles NaN/empty strings by treating them as not containing the keywords.
+    """
+    if pd.isna(text) or not str(text).strip(): # Check for NaN or empty string after stripping whitespace
+        return False
+    text_str = str(text)
+
+    for sublist in KEYWORD_ONEOF_LISTS:
+        found_in_sublist = False
+        for keyword in sublist:
+            if re.search(re.escape(keyword), text_str, re.IGNORECASE):
+                found_in_sublist = True
+                break
+        if not found_in_sublist:
+            return False
+    return True
+
+# Apply the check for 'Report' column (first 4 lines)
+def check_report_for_keywords(text):
+    if pd.isna(text):
+        return False
+    lines = str(text).splitlines()
+    non_empty_lines = [line for line in lines if line.strip()]
+    search_string = "\n".join(non_empty_lines[:6]) # Take at most the first 6 lines
+    return check_for_keywords(search_string)
+
+def get_relevant_reports(df):
+    df_relevant_procedures = pd.read_csv("relevant_ZBEFALL.csv", dtype=np.str_)
+
+    df_unfiltered = df.copy()
+
+    # 2a. check if title of procedure (COLNAME_PROZEDUR) is in list of relevant procedures. Write as boolean to new column:
+    df_unfiltered["has_relevant_procedure"] = df_unfiltered[COLNAME_PROZEDUR].str.lower().isin(
+        df_relevant_procedures[COLNAME_PROZEDUR].str.lower()
+    )
+
+    # check if title of procedure (COLNAME_PROZEDUR) has relevant keywords. Write as boolean to new column:
+    df_unfiltered["has_keyword_in_procedure_title"] = df_unfiltered[COLNAME_PROZEDUR].apply(lambda x: check_for_keywords(x))
+
+    # 2b. check if first 6 non-empty lines have relevant keywords. Write as boolean to new column:
+    df_unfiltered["has_keywords_in_befundtext"] = df_unfiltered["CONTENT"].apply(lambda x: check_report_for_keywords(x))
+
+    df_result = df_unfiltered[
+        df_unfiltered["has_relevant_procedure"] |
+        df_unfiltered["has_keyword_in_procedure_title"] |
+        df_unfiltered["has_keywords_in_befundtext"]
+    ]
+
+    return df_result
+
+
+if __name__ == "__main__":
+    list_all = []
+
+    # 1a. Import data
+    for reports_filename in RAD_REPORTS_FILENAMES:
+        df_imported = pd.read_csv(
+            reports_filename,
+            dtype="str",
+            sep=IMPORT_SEPERATOR,
+            encoding=IMPORT_ENCODING,
+            quotechar='"',
+            on_bad_lines="warn",
+            keep_default_na=False
+        )
+        list_all.append(df_imported)
+
+    if not check_columns(list_all):
+        raise Exception("Not all input files share the same columns.")
+
+    # 1b. Create pandas dataframe with all imported reports
+    df_all = pd.concat(list_all, ignore_index=True)
+
+    # 2. filter for relevant tuples
+    df_all_relevant = get_relevant_reports(df_all)
+    print(f"Of all provided data, {len(df_all)} unique reports per case remain. {len(df_all_relevant)} are relevant.")
+
+    # 3. extract assessment part from CONTENT, by splitting at word 'Beurteilung:'
+    df_all_relevant["has_assessment"] = np.where(df_all_relevant["CONTENT"].str.contains("Beurteilung:", na=False), 1, 0)
+    df_all_relevant["assessment"] = np.where(
+        df_all_relevant["has_assessment"] == 1,
+        df_all_relevant["CONTENT"].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
+        ""
+    )
+
+    print(f"{df_all_relevant["has_assessment"].sum()} / {len(df_all_relevant)} ({round(
+        df_all_relevant["has_assessment"].sum() * 100 / len(df_all_relevant), 1
+    )}%) cases with 'Beurteilung:' in CONTENT")
+
+    # 4. write relevant cases to csv
+    if WRITE_TO_CSV:
+        print(df_all_relevant.columns)
+        print(COLUMNS_IN_OUTPUT)
+        output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
+        print(f"successfully written to {output_file}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
