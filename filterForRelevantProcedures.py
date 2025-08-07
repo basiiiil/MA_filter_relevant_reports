@@ -20,14 +20,8 @@ import numpy as np
 import re
 
 from config import COLNAME_PROZEDUR, RAD_REPORTS_FILENAMES, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
-    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME
+    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_ONEOF_LISTS
 from util_functions import check_columns, write_to_csv
-
-KEYWORD_ONEOF_LISTS = [
-    ["ct", "computertomographie", "computertomografie", "spiral", "polytrauma"],
-    ["km", "kontrastmittel", "PET"],
-    ["thorax", "koerperstamm", "körperstamm", "pulm", "lunge", "aorta", "spiral", "polytrauma", "PET"]
-]
 
 def check_for_keywords(text):
     """

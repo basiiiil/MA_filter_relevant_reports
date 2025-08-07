@@ -4,6 +4,13 @@ RAD_REPORTS_FILENAMES = [
     # "datei-1.csv",
     # "datei-2.csv"
 ]
+
+KEYWORD_ONEOF_LISTS = [
+    ["ct", "computertomographie", "computertomografie", "spiral", "polytrauma", "PET", "positronenemission"],
+    ["km", "kontrastmittel", "PET", "positronenemission"],
+    ["thorax", "koerperstamm", "körperstamm", "pulm", "lunge", "aorta", "spiral", "polytrauma", "PET", "positronenemission"]
+]
+
 IMPORT_SEPERATOR = "," # Separator-Zeichen der zu importierenden CSVs
 IMPORT_ENCODING = "utf_8" # Encoding der zu importierenden CSVs
 
