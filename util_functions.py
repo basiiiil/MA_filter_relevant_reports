@@ -2,8 +2,6 @@ import csv
 import datetime
 import pandas as pd
 
-DATA_FOLDER_PATH = "csvs_from_Befundtexte/"
-
 def write_to_csv(df, output_filename_without_ending):
     now = datetime.datetime.now()
     output_filename = f"{now.strftime("%Y-%m-%d_%X")}_{output_filename_without_ending}.csv"

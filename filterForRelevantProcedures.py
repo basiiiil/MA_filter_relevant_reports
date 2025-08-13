@@ -19,8 +19,9 @@ import pandas as pd
 import numpy as np
 import re
 
-from config import COLNAME_PROZEDUR, RAD_REPORTS_FILENAMES, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
-    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_ONEOF_LISTS
+from config import COLNAME_PROZEDUR, EXPORTED_DATA_FILENAMES, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
+    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
+    COLNAME_BEFUNDTEXT
 from util_functions import check_columns, write_to_csv
 
 def check_for_keywords(text):
@@ -32,7 +33,7 @@ def check_for_keywords(text):
         return False
     text_str = str(text)
 
-    for sublist in KEYWORD_ONEOF_LISTS:
+    for sublist in KEYWORD_LISTS:
         found_in_sublist = False
         for keyword in sublist:
             if re.search(re.escape(keyword), text_str, re.IGNORECASE):
@@ -65,7 +66,19 @@ def get_relevant_reports(df):
     df_unfiltered["has_keyword_in_procedure_title"] = df_unfiltered[COLNAME_PROZEDUR].apply(lambda x: check_for_keywords(x))
 
     # 2b. check if first 6 non-empty lines have relevant keywords. Write as boolean to new column:
-    df_unfiltered["has_keywords_in_befundtext"] = df_unfiltered["CONTENT"].apply(lambda x: check_report_for_keywords(x))
+    if COLNAME_BEFUNDTEXT not in df_unfiltered.columns and not CONTENT_IN_MULTIPLE_COLUMNS:
+        raise Exception(f"""Spalte '{COLNAME_BEFUNDTEXT}' exisitiert nicht,
+        aber CONTENT_IN_MULTIPLE_COLUMNS ist in config.py auch nicht True.
+        Spaltennamen prüfen oder CONTENT_IN_MULTIPLE_COLUMNS auf True setzen.""")
+    if CONTENT_IN_MULTIPLE_COLUMNS:
+        columns_to_concat = [col for col in df_unfiltered.columns if col.startswith(MULTIPLE_CONTENT_COLS_PREFIX)]
+        if len(columns_to_concat) == 0:
+            raise Exception(f"""CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'.
+            Wert in config.py für MULTIPLE_CONTENT_COLS_PREFIX prüfen.""")
+
+        df_unfiltered[COLNAME_BEFUNDTEXT] = df_unfiltered[columns_to_concat].fillna("").agg("".join, axis=1).str.strip()
+
+    df_unfiltered["has_keywords_in_befundtext"] = df_unfiltered[COLNAME_BEFUNDTEXT].apply(lambda x: check_report_for_keywords(x))
 
     df_result = df_unfiltered[
         df_unfiltered["has_relevant_procedure"] |
@@ -80,7 +93,7 @@ if __name__ == "__main__":
     list_all = []
 
     # 1a. Import data
-    for reports_filename in RAD_REPORTS_FILENAMES:
+    for reports_filename in EXPORTED_DATA_FILENAMES:
         df_imported = pd.read_csv(
             reports_filename,
             dtype="str",
@@ -103,10 +116,10 @@ if __name__ == "__main__":
     print(f"Of all provided data, {len(df_all)} unique reports per case remain. {len(df_all_relevant)} are relevant.")
 
     # 3. extract assessment part from CONTENT, by splitting at word 'Beurteilung:'
-    df_all_relevant["has_assessment"] = np.where(df_all_relevant["CONTENT"].str.contains("Beurteilung:", na=False), 1, 0)
+    df_all_relevant["has_assessment"] = np.where(df_all_relevant[COLNAME_BEFUNDTEXT].str.contains("Beurteilung:", na=False), 1, 0)
     df_all_relevant["assessment"] = np.where(
         df_all_relevant["has_assessment"] == 1,
-        df_all_relevant["CONTENT"].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
+        df_all_relevant[COLNAME_BEFUNDTEXT].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
         ""
     )
 
