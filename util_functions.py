@@ -65,6 +65,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
         )
         reference_cols = list(reference_df.columns)
         dfs.append(reference_df)
+        print(f"Successfully read '{first_file}'.")
     except Exception as e:
         print(f"Error reading first file '{first_file}': {e}")
         return None
@@ -93,6 +94,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
 
             # If columns match, append the DataFrame to the list
             dfs.append(current_df)
+            print(f"Successfully read and appended '{file_path}'.")
         except Exception as e:
             print(f"Error processing file '{file_path}': {e}")
             raise  # Re-raise the exception after printing the error

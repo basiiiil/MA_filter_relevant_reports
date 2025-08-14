@@ -108,14 +108,12 @@ if __name__ == "__main__":
 
     print(f"{df_all_relevant['has_assessment'].sum()} / {len(df_all_relevant)} ({round(
         df_all_relevant['has_assessment'].sum() * 100 / len(df_all_relevant), 1
-    )}%) cases with 'Beurteilung:' in CONTENT")
+    )}%) cases with 'Beurteilung:' in CONTENT.")
 
     # 4. write relevant cases to csv
     if WRITE_TO_CSV:
-        print(df_all_relevant.columns)
-        print(COLUMNS_IN_OUTPUT)
         output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
-        print(f"successfully written to {output_file}")
+        print(f"Successfully written the output to '{output_file}'.")
 
 
 
