@@ -1,5 +1,6 @@
 Zur Nutzung dieses Projekts einfach
-1. in der `config.py` die relevanten Konstanten, insbesondere die Pfade zu den CSVs, befüllen.
+1. `config_template.py` duplizieren und zu `config.py` umbenennen (wird via `.gitignore` gefiltert).
+2. In der `config.py` die relevanten Konstanten, insbesondere die Pfade zu den CSVs, befüllen.
     
     ⚠️ **WICHTIG!** Falls die Befundtexte auf mehrere Spalten aufgeteilt sind, muss in `config.py`:
    1. der Wert für `CONTENT_IN_MULTIPLE_COLUMNS = True` sein
