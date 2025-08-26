@@ -24,18 +24,18 @@ KEYWORD_LISTS = [
 WRITE_TO_CSV = True # Entscheidet, ob das Ergebnis als CSV exportiert werden soll
 OUTPUT_FILENAME = "PMD_RAD_Befunde_2022_filtered" # Dateiname der Ergebnis-CSV - ohne Dateiendung!
 COLUMNS_IN_OUTPUT = [ # Spaltennamen, die in der exportierten CSV enthalten sein sollen
-    'FALNR',
-    'Jahr',
-    'ORGFA',
-    'ORGPF',
-    'DOKNR',
-    # 'DOKVR',
-    # 'DOKTL',
-    'ZBEFALL04B',
-    # 'ZBEFALL04D',
-    # 'DODAT',
-    # 'ERDAT',
-    # 'UPDAT',
+    "FALNR",
+    "Jahr",
+    "ORGFA",
+    "ORGPF",
+    "DOKNR",
+    # "DOKVR",
+    # "DOKTL",
+    "ZBEFALL04B",
+    # "ZBEFALL04D",
+    # "DODAT",
+    # "ERDAT",
+    # "UPDAT",
     COLNAME_BEFUNDTEXT,
-    'assessment'
+    "assessment"
 ]

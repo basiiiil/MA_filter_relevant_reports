@@ -5,11 +5,11 @@ import pandas as pd
 
 def write_to_csv(df, output_filename_without_ending):
     now = datetime.datetime.now()
-    output_filename = f"{now.strftime("%Y-%m-%d_%X")}_{output_filename_without_ending}.csv"
+    output_filename = f"{now.strftime('%Y-%m-%d_%X')}_{output_filename_without_ending}.csv"
 
     df.to_csv(
         output_filename,
-        encoding='utf-8',
+        encoding="utf-8",
         index=False,  # Prevent pandas from writing the DataFrame index as a column
         quotechar='"',  # Ensure the output uses the same quote character
         quoting=csv.QUOTE_ALL
@@ -44,7 +44,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
     dfs = []
 
     # Get a list of all CSV files in the folder
-    csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
+    csv_files = [f for f in os.listdir(folder_path) if f.endswith(".csv")]
 
     # If no CSV files are found, return None
     if not csv_files:
@@ -88,8 +88,8 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
             # Check if columns are exactly the same as the reference
             if current_cols != reference_cols:
                 raise ValueError(
-                    f"Column mismatch! '{csv_file}' has columns {current_cols}, "
-                    f"but expected columns are {reference_cols}."
+                    f"""Column mismatch! '{csv_file}' has columns {current_cols},
+                    but expected columns are {reference_cols}."""
                 )
 
             # If columns match, append the DataFrame to the list
