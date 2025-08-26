@@ -22,7 +22,7 @@ import re
 from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
     COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
     COLNAME_BEFUNDTEXT
-from util_functions import check_columns, write_to_csv, merge_csv_files
+from util_functions import write_to_csv, merge_csv_files
 
 
 def check_for_keywords(text):
@@ -30,7 +30,7 @@ def check_for_keywords(text):
     Checks if all specified keywords are present in the text (case-insensitive).
     Handles NaN/empty strings by treating them as not containing the keywords.
     """
-    if pd.isna(text) or not str(text).strip(): # Check for NaN or empty string after stripping whitespace
+    if pd.isna(text) or not str(text).strip():  # Check for NaN or empty string after stripping whitespace
         return False
     text_str = str(text)
 
@@ -44,14 +44,16 @@ def check_for_keywords(text):
             return False
     return True
 
+
 # Apply the check for 'Report' column (first 4 lines)
 def check_report_for_keywords(text):
     if pd.isna(text):
         return False
     lines = str(text).splitlines()
     non_empty_lines = [line for line in lines if line.strip()]
-    search_string = "\n".join(non_empty_lines[:6]) # Take at most the first 6 lines
+    search_string = "\n".join(non_empty_lines[:6])  # Take at most the first 6 lines
     return check_for_keywords(search_string)
+
 
 def get_relevant_reports(df):
     df_relevant_procedures = pd.read_csv("relevant_ZBEFALL.csv", dtype=np.str_)
@@ -82,9 +84,9 @@ def get_relevant_reports(df):
     df_unfiltered['has_keywords_in_befundtext'] = df_unfiltered[COLNAME_BEFUNDTEXT].apply(lambda x: check_report_for_keywords(x))
 
     df_result = df_unfiltered[
-        df_unfiltered['has_relevant_procedure'] |
-        df_unfiltered['has_keyword_in_procedure_title'] |
-        df_unfiltered['has_keywords_in_befundtext']
+        df_unfiltered['has_relevant_procedure']
+        | df_unfiltered['has_keyword_in_procedure_title']
+        | df_unfiltered['has_keywords_in_befundtext']
     ]
 
     return df_result
@@ -114,19 +116,3 @@ if __name__ == "__main__":
     if WRITE_TO_CSV:
         output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
         print(f"Successfully written the output to '{output_file}'.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
