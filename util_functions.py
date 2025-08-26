@@ -6,9 +6,8 @@ import pandas as pd
 
 def write_to_csv(df, output_filename_without_ending):
     now = datetime.datetime.now()
-    output_filename = f"{now.strftime(
-        '%Y-%m-%d_%X'
-    )}_{output_filename_without_ending}.csv"
+    parts = output_filename_without_ending.split("/")
+    output_filename = "/".join(parts[:-1]) + f"/{now.strftime('%Y-%m-%d')}_{parts[-1]}.csv"
 
     df.to_csv(
         output_filename,
@@ -64,7 +63,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
             sep=csv_sep,
             encoding=csv_encoding,
             quotechar='"',
-            on_bad_lines="warn",
+#            on_bad_lines="warn",
             keep_default_na=False
         )
         reference_cols = list(reference_df.columns)
