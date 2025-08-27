@@ -1,8 +1,8 @@
 """ ----- DIE FOLGENDEN VARIABLEN MÜSSEN ANGEPASST WERDEN ----- """
 """ A) Definition der exportierten Tabellen """
 EXPORTED_DATA_FOLDER_PATH = "exported_data"
-IMPORT_SEPERATOR = ","  # Separator-Zeichen der exportierten CSVs
-IMPORT_ENCODING = "utf_8"  # Encoding der exportierten CSVs
+IMPORT_SEPARATOR = ","  # Separator-Zeichen der exportierten CSVs
+IMPORT_ENCODING = "utf-8"  # Encoding der exportierten CSVs
 
 # Name der Spalte, in der die Befundtexte liegen:
 COLNAME_BEFUNDTEXT = "CONTENT"

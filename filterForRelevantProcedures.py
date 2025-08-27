@@ -2,7 +2,8 @@
 In dieser Datei:
 1. Die exportierten Daten werden in ein Pandas dataframe umgewandelt.
 2. Die Daten werden nach relevanten Prozeduren gefiltert.
-    a. Alle Tuple, deren Prozedurentitel (COLNAME_PROZEDUR) nicht in relevant_ZBEFALL.csv enthalten ist, werden entfernt.
+    a. Alle Tuple, deren Prozedurentitel (COLNAME_PROZEDUR) nicht in relevant_ZBEFALL.csv enthalten ist,
+       werden entfernt.
        Tuple mit leerem Prozedurentitel werden dabei nicht entfernt.
     b. Alle Befundtexte werden nach Schlüsselwörtern durchsucht (nur die ersten 6 nicht-leeren Zeilen).
        Es werden nur diejenigen Tupel beibehalten, die mindestens eines der Schlüsselwörter (case-insensitive)
@@ -19,7 +20,7 @@ import pandas as pd
 import numpy as np
 import re
 
-from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPERATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
+from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
     COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
     COLNAME_BEFUNDTEXT
 from util_functions import write_to_csv, merge_csv_files
@@ -60,13 +61,16 @@ def get_relevant_reports(df):
 
     df_unfiltered = df.copy()
 
-    # 2a. check if title of procedure (COLNAME_PROZEDUR) is in list of relevant procedures. Write as boolean to new column:
+    # 2a. check if title of procedure (COLNAME_PROZEDUR) is in list of relevant procedures.
+    # Write as boolean to new column:
     df_unfiltered['has_relevant_procedure'] = df_unfiltered[COLNAME_PROZEDUR].str.lower().isin(
         df_relevant_procedures[COLNAME_PROZEDUR].str.lower()
     )
 
     # check if title of procedure (COLNAME_PROZEDUR) has relevant keywords. Write as boolean to new column:
-    df_unfiltered['has_keyword_in_procedure_title'] = df_unfiltered[COLNAME_PROZEDUR].apply(lambda x: check_for_keywords(x))
+    df_unfiltered['has_keyword_in_procedure_title'] = df_unfiltered[COLNAME_PROZEDUR].apply(
+        lambda x: check_for_keywords(x)
+    )
 
     # 2b. check if first 6 non-empty lines have relevant keywords. Write as boolean to new column:
     if COLNAME_BEFUNDTEXT not in df_unfiltered.columns and not CONTENT_IN_MULTIPLE_COLUMNS:
@@ -76,12 +80,17 @@ def get_relevant_reports(df):
     if CONTENT_IN_MULTIPLE_COLUMNS:
         columns_to_concat = [col for col in df_unfiltered.columns if col.startswith(MULTIPLE_CONTENT_COLS_PREFIX)]
         if len(columns_to_concat) == 0:
-            raise Exception(f"""CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'.
-            Wert in config.py für MULTIPLE_CONTENT_COLS_PREFIX prüfen.""")
+            raise Exception(
+                f"CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert"
+                + " keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'\n."
+                + "Wert in config.py für MULTIPLE_CONTENT_COLS_PREFIX prüfen."
+            )
 
         df_unfiltered[COLNAME_BEFUNDTEXT] = df_unfiltered[columns_to_concat].fillna("").agg("".join, axis=1).str.strip()
 
-    df_unfiltered['has_keywords_in_befundtext'] = df_unfiltered[COLNAME_BEFUNDTEXT].apply(lambda x: check_report_for_keywords(x))
+    df_unfiltered['has_keywords_in_befundtext'] = df_unfiltered[COLNAME_BEFUNDTEXT].apply(
+        lambda x: check_report_for_keywords(x)
+    )
 
     df_result = df_unfiltered[
         df_unfiltered['has_relevant_procedure']
@@ -94,23 +103,27 @@ def get_relevant_reports(df):
 
 if __name__ == "__main__":
     # 1a. Import data
-    df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPERATOR, IMPORT_ENCODING)
+    df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
 
     # 2. filter for relevant tuples
     df_all_relevant = get_relevant_reports(df_all)
     print(f"Of all provided data, {len(df_all)} unique reports per case remain. {len(df_all_relevant)} are relevant.")
 
     # 3. extract assessment part from CONTENT, by splitting at word 'Beurteilung:'
-    df_all_relevant['has_assessment'] = np.where(df_all_relevant[COLNAME_BEFUNDTEXT].str.contains("Beurteilung:", na=False), 1, 0)
+    df_all_relevant['has_assessment'] = np.where(
+        df_all_relevant[COLNAME_BEFUNDTEXT].str.contains("Beurteilung:", na=False), 1, 0
+    )
     df_all_relevant['assessment'] = np.where(
         df_all_relevant['has_assessment'] == 1,
         df_all_relevant[COLNAME_BEFUNDTEXT].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
         ""
     )
 
-    print(f"{df_all_relevant['has_assessment'].sum()} / {len(df_all_relevant)} ({round(
-        df_all_relevant['has_assessment'].sum() * 100 / len(df_all_relevant), 1
-    )}%) cases with 'Beurteilung:' in CONTENT.")
+    print(
+        f"{df_all_relevant['has_assessment'].sum()} / {len(df_all_relevant)} ("
+        + f"{round(df_all_relevant['has_assessment'].sum() * 100 / len(df_all_relevant), 1)}%)"
+        + " cases with 'Beurteilung:' in CONTENT."
+    )
 
     # 4. write relevant cases to csv
     if WRITE_TO_CSV:
