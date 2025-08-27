@@ -4,3 +4,7 @@ __pycache__/
 
 # config
 config.py
+
+# data
+*.csv
+*.xlsx
