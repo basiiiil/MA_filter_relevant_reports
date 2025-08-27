@@ -4,6 +4,3 @@ __pycache__/
 
 # config
 config.py
-
-# Linter
-.flake8
