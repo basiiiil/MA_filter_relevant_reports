@@ -101,7 +101,7 @@ def get_relevant_reports(df):
     return df_result
 
 
-if __name__ == "__main__":
+def main():
     # 1a. Import data
     df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
 
@@ -129,3 +129,6 @@ if __name__ == "__main__":
     if WRITE_TO_CSV:
         output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
         print(f"Successfully written the output to '{output_file}'.")
+
+if __name__ == "__main__":
+    main()

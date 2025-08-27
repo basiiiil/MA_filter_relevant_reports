@@ -7,7 +7,8 @@ import pandas as pd
 def write_to_csv(df, output_filename_without_ending):
     now = datetime.datetime.now()
     parts = output_filename_without_ending.split("/")
-    output_filename = "/".join(parts[:-1]) + f"/{now.strftime('%Y-%m-%d')}_{parts[-1]}.csv"
+    output_path = "/".join(parts[:-1]) + "/" if len(parts) > 1 else ""
+    output_filename = output_path + f"{now.strftime('%Y-%m-%d')}_{parts[-1]}.csv"
 
     df.to_csv(
         output_filename,
