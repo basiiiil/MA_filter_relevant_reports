@@ -8,3 +8,4 @@ config.py
 # data
 *.csv
 *.xlsx
+*.ods

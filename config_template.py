@@ -30,10 +30,11 @@ KEYWORD_LISTS = [
         "computertomografie",
         "spiral",
         "polytrauma",
-        "PET",
+        "PET-CT",
+        "PET-MR",
         "positronenemission"
     ],
-    ["km", "kontrastmittel", "PET", "positronenemission"],
+    ["km", "kontrastmittel", "PET-CT", "PET-MR","positronenemission"],
     [
         "thorax",
         "koerperstamm",
@@ -43,7 +44,8 @@ KEYWORD_LISTS = [
         "aorta",
         "spiral",
         "polytrauma",
-        "PET",
+        "PET-CT",
+        "PET-MR",
         "positronenemission"
     ]
 ]
