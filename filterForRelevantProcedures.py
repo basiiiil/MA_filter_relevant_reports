@@ -82,8 +82,8 @@ def get_relevant_reports(df):
         columns_to_concat = [col for col in df_unfiltered.columns if col.startswith(MULTIPLE_CONTENT_COLS_PREFIX)]
         if len(columns_to_concat) == 0:
             raise Exception(
-                f"CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert"
-                + " keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'\n."
+                "CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert"
+                + f" keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'\n."
                 + "Wert in config.py für MULTIPLE_CONTENT_COLS_PREFIX prüfen."
             )
 
