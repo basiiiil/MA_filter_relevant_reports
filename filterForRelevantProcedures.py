@@ -21,9 +21,10 @@ import numpy as np
 import re
 
 from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
-    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
-    COLNAME_BEFUNDTEXT
-from util_functions import write_to_csv, merge_csv_files
+    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
+    COLNAME_BEFUNDTEXT, IMPORT_FILETYPE_IS_XLSX, OUTPUT_FOLDER_PATH
+from filterParams import KEYWORD_LISTS
+from util_functions import write_to_csv, merge_csv_files, merge_xlsx_files
 
 
 def check_for_keywords(text):
@@ -81,8 +82,8 @@ def get_relevant_reports(df):
         columns_to_concat = [col for col in df_unfiltered.columns if col.startswith(MULTIPLE_CONTENT_COLS_PREFIX)]
         if len(columns_to_concat) == 0:
             raise Exception(
-                f"CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert"
-                + " keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'\n."
+                "CONTENT_IN_MULTIPLE_COLUMNS ist True, aber es existiert"
+                + f" keine Spalte mit '{MULTIPLE_CONTENT_COLS_PREFIX}'\n."
                 + "Wert in config.py für MULTIPLE_CONTENT_COLS_PREFIX prüfen."
             )
 
@@ -103,11 +104,14 @@ def get_relevant_reports(df):
 
 def main():
     # 1a. Import data
-    df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
+    if IMPORT_FILETYPE_IS_XLSX:
+        df_all = merge_xlsx_files(EXPORTED_DATA_FOLDER_PATH)
+    else:
+        df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
 
     # 2. filter for relevant tuples
     df_all_relevant = get_relevant_reports(df_all)
-    print(f"Of all provided data, {len(df_all)} unique reports per case remain. {len(df_all_relevant)} are relevant.")
+    print(f"There are {len(df_all)} unique reports per case. {len(df_all_relevant)} are relevant.")
 
     # 3. extract assessment part from CONTENT, by splitting at word 'Beurteilung:'
     df_all_relevant['has_assessment'] = np.where(
@@ -127,7 +131,11 @@ def main():
 
     # 4. write relevant cases to csv
     if WRITE_TO_CSV:
-        output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
+        output_file = write_to_csv(
+            df_all_relevant.filter(items=COLUMNS_IN_OUTPUT),
+            OUTPUT_FILENAME,
+            OUTPUT_FOLDER_PATH
+        )
         print(f"Successfully written the output to '{output_file}'.")
 
 if __name__ == "__main__":
