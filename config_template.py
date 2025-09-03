@@ -1,7 +1,7 @@
 """ ----- DIE FOLGENDEN VARIABLEN MÜSSEN ANGEPASST WERDEN ----- """
 """ A) Definition der exportierten Tabellen """
 EXPORTED_DATA_FOLDER_PATH = "data_to_filter"
-IMPORT_FILETYPE_IS_XLSX = False  # Falls False, wird CSV angenommen
+IMPORT_FILETYPE_IS_XLSX = True  # Falls False, wird CSV angenommen
 IMPORT_SEPARATOR = ","  # Separator-Zeichen der exportierten CSVs
 IMPORT_ENCODING = "utf-8"  # Encoding der exportierten CSVs
 
@@ -24,38 +24,12 @@ MULTIPLE_CONTENT_COLS_PREFIX = "Teil_"
 # (nur bei wenigen Befunden vorhanden):
 COLNAME_PROZEDUR = "ZBEFALL04B"
 
-KEYWORD_LISTS = [
-    [
-        "ct",
-        "computertomographie",
-        "computertomografie",
-        "spiral",
-        "polytrauma",
-        "PET-CT",
-        "PET-MR",
-        "positronenemission"
-    ],
-    ["km", "kontrastmittel", "PET-CT", "PET-MR","positronenemission"],
-    [
-        "thorax",
-        "koerperstamm",
-        "körperstamm",
-        "pulm",
-        "lunge",
-        "aorta",
-        "spiral",
-        "polytrauma",
-        "PET-CT",
-        "PET-MR",
-        "positronenemission"
-    ]
-]
-
 # Entscheidet, ob das Ergebnis als CSV exportiert werden soll:
 WRITE_TO_CSV = True
 
-# Dateiname der Ergebnis-CSV - ohne Dateiendung!
-OUTPUT_FILENAME = "PMD_RAD_Befunde_2022_filtered"
+# Dateiname und Pfad der Ergebnis-CSV - ohne Dateiendung!
+OUTPUT_FILENAME = "xlsx_test"
+OUTPUT_FOLDER_PATH = "outputs"
 
 # Spaltennamen, die in der exportierten CSV enthalten sein sollen:
 COLUMNS_IN_OUTPUT = [

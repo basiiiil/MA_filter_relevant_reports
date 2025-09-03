@@ -11,3 +11,4 @@ config.py
 *.ods
 /data_to_filter
 /exported_data
+/results

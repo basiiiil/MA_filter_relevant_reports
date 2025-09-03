@@ -21,8 +21,9 @@ import numpy as np
 import re
 
 from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
-    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
-    COLNAME_BEFUNDTEXT, IMPORT_FILETYPE_IS_XLSX
+    COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
+    COLNAME_BEFUNDTEXT, IMPORT_FILETYPE_IS_XLSX, OUTPUT_FOLDER_PATH
+from filterParams import KEYWORD_LISTS
 from util_functions import write_to_csv, merge_csv_files, merge_xlsx_files
 
 
@@ -130,7 +131,11 @@ def main():
 
     # 4. write relevant cases to csv
     if WRITE_TO_CSV:
-        output_file = write_to_csv(df_all_relevant.filter(items=COLUMNS_IN_OUTPUT), OUTPUT_FILENAME)
+        output_file = write_to_csv(
+            df_all_relevant.filter(items=COLUMNS_IN_OUTPUT),
+            OUTPUT_FILENAME,
+            OUTPUT_FOLDER_PATH
+        )
         print(f"Successfully written the output to '{output_file}'.")
 
 if __name__ == "__main__":

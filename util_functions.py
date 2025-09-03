@@ -4,11 +4,13 @@ import datetime
 import pandas as pd
 
 
-def write_to_csv(df, output_filename_without_ending):
+def write_to_csv(df, output_filename, output_folder_path):
     now = datetime.datetime.now()
-    parts = output_filename_without_ending.split("/")
-    output_path = "/".join(parts[:-1]) + "/" if len(parts) > 1 else ""
-    output_filename = output_path + f"{now.strftime('%Y-%m-%d_%H:%M')}_{parts[-1]}.csv"
+    if not os.path.isdir(output_folder_path):
+        os.mkdir(output_folder_path)
+    output_filename = (
+            output_folder_path + f"/{now.strftime('%F_%H:%M')}_{output_filename}.csv"
+    )
 
     df.to_csv(
         output_filename,
@@ -64,7 +66,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
             sep=csv_sep,
             encoding=csv_encoding,
             quotechar='"',
-#            on_bad_lines="warn",
+            # on_bad_lines="warn",
             keep_default_na=False
         )
         reference_cols = list(reference_df.columns)
@@ -106,6 +108,7 @@ def merge_csv_files(folder_path, csv_sep=",", csv_encoding="utf-8"):
     # Concatenate all DataFrames in the list
     merged_df = pd.concat(dfs, ignore_index=True)
     return merged_df
+
 
 def merge_xlsx_files(folder_path):
     """
