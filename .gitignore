@@ -9,3 +9,5 @@ config.py
 *.csv
 *.xlsx
 *.ods
+/data_to_filter
+/exported_data
