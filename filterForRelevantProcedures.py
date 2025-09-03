@@ -22,8 +22,8 @@ import re
 
 from config import COLNAME_PROZEDUR, EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING, WRITE_TO_CSV, \
     COLUMNS_IN_OUTPUT, OUTPUT_FILENAME, KEYWORD_LISTS, CONTENT_IN_MULTIPLE_COLUMNS, MULTIPLE_CONTENT_COLS_PREFIX, \
-    COLNAME_BEFUNDTEXT
-from util_functions import write_to_csv, merge_csv_files
+    COLNAME_BEFUNDTEXT, IMPORT_FILETYPE_IS_XLSX
+from util_functions import write_to_csv, merge_csv_files, merge_xlsx_files
 
 
 def check_for_keywords(text):
@@ -103,11 +103,14 @@ def get_relevant_reports(df):
 
 def main():
     # 1a. Import data
-    df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
+    if IMPORT_FILETYPE_IS_XLSX:
+        df_all = merge_xlsx_files(EXPORTED_DATA_FOLDER_PATH)
+    else:
+        df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
 
     # 2. filter for relevant tuples
     df_all_relevant = get_relevant_reports(df_all)
-    print(f"Of all provided data, {len(df_all)} unique reports per case remain. {len(df_all_relevant)} are relevant.")
+    print(f"There are {len(df_all)} unique reports per case. {len(df_all_relevant)} are relevant.")
 
     # 3. extract assessment part from CONTENT, by splitting at word 'Beurteilung:'
     df_all_relevant['has_assessment'] = np.where(

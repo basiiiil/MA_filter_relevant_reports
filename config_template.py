@@ -1,6 +1,7 @@
 """ ----- DIE FOLGENDEN VARIABLEN MÜSSEN ANGEPASST WERDEN ----- """
 """ A) Definition der exportierten Tabellen """
-EXPORTED_DATA_FOLDER_PATH = "exported_data"
+EXPORTED_DATA_FOLDER_PATH = "data_to_filter"
+IMPORT_FILETYPE_IS_XLSX = False  # Falls False, wird CSV angenommen
 IMPORT_SEPARATOR = ","  # Separator-Zeichen der exportierten CSVs
 IMPORT_ENCODING = "utf-8"  # Encoding der exportierten CSVs
 
