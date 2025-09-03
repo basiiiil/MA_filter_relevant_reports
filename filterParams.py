@@ -1,5 +1,5 @@
-# updated on 2025-09-03
-# PET replaced with 'PET-CT' and 'PET-MR'
+# updated on 2025-09-03:
+# replaced 'PET' with 'PET-CT' and 'PET-MR'
 
 KEYWORD_LISTS = [
     [
