@@ -9,7 +9,7 @@ def write_to_csv(df, output_filename, output_folder_path):
     if not os.path.isdir(output_folder_path):
         os.mkdir(output_folder_path)
     output_filename = (
-            output_folder_path + f"/{now.strftime('%F_%H:%M')}_{output_filename}.csv"
+            output_folder_path + f"/{now.strftime('%F_%H-%M')}_{output_filename}.csv"
     )
 
     df.to_csv(
