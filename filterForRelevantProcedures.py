@@ -122,6 +122,26 @@ def main():
         df_all_relevant[COLNAME_BEFUNDTEXT].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
         ""
     )
+    # df_all_relevant['assessment'] = np.where(
+    #     df_all_relevant['has_assessment'] == 1,
+    #     df_all_relevant[COLNAME_BEFUNDTEXT].str.split(
+    #         "Beurteilung:", n=1
+    #     ).str.get(1).str.replace('_x000D_', '').str.strip(),
+    #     ""
+    # )
+    #
+    # df_all_relevant['CONTENT_clean'] = df_all_relevant[
+    #     COLNAME_BEFUNDTEXT
+    # ].str.replace('_x000D_', '').str.strip()
+    #
+    # df_all_relevant.rename(
+    #     columns={
+    #         COLNAME_BEFUNDTEXT: COLNAME_BEFUNDTEXT + "_raw",
+    #         "CONTENT_clean": COLNAME_BEFUNDTEXT,
+    #     },
+    #     inplace=True
+    # )
+    # print(df_all_relevant.columns)
 
     print(
         f"{df_all_relevant['has_assessment'].sum()} / {len(df_all_relevant)} ("

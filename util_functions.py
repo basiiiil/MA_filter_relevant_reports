@@ -176,4 +176,5 @@ def merge_xlsx_files(folder_path):
 
     # Concatenate all DataFrames in the list
     merged_df = pd.concat(dfs, ignore_index=True)
+
     return merged_df
