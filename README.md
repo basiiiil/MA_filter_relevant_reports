@@ -1,4 +1,9 @@
-Zur Nutzung dieses Projekts einfach
+## LAE-Risikoscore: Filterung auf relevante CT-Befunde
+
+### Was dieses Projekt macht
+Die vom DIZ ausgeleiteten Befunde werden so gefiltert, dass nur Befunde übrig bleiben, die eine CT des Thorax mit Kontrastmittel beinhalten.
+
+### Zur Nutzung dieses Projekts einfach
 1. `config_template.py` duplizieren und zu `config.py` umbenennen (wird via `.gitignore` gefiltert).
 2. In der `config.py` die relevanten Konstanten, insbesondere die Pfade zu den CSVs, befüllen.
     
