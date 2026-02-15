@@ -109,6 +109,7 @@ def main():
     else:
         df_all = merge_csv_files(EXPORTED_DATA_FOLDER_PATH, IMPORT_SEPARATOR, IMPORT_ENCODING)
 
+    print(df_all.shape)
     # 2. filter for relevant tuples
     df_all_relevant = get_relevant_reports(df_all)
     print(f"There are {len(df_all)} unique reports per case. {len(df_all_relevant)} are relevant.")
@@ -117,31 +118,31 @@ def main():
     df_all_relevant['has_assessment'] = np.where(
         df_all_relevant[COLNAME_BEFUNDTEXT].str.contains("Beurteilung:", na=False), 1, 0
     )
-    df_all_relevant['assessment'] = np.where(
-        df_all_relevant['has_assessment'] == 1,
-        df_all_relevant[COLNAME_BEFUNDTEXT].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
-        ""
-    )
     # df_all_relevant['assessment'] = np.where(
     #     df_all_relevant['has_assessment'] == 1,
-    #     df_all_relevant[COLNAME_BEFUNDTEXT].str.split(
-    #         "Beurteilung:", n=1
-    #     ).str.get(1).str.replace('_x000D_', '').str.strip(),
+    #     df_all_relevant[COLNAME_BEFUNDTEXT].str.split("Beurteilung:", n=1).str.get(1).str.strip(),
     #     ""
     # )
-    #
-    # df_all_relevant['CONTENT_clean'] = df_all_relevant[
-    #     COLNAME_BEFUNDTEXT
-    # ].str.replace('_x000D_', '').str.strip()
-    #
-    # df_all_relevant.rename(
-    #     columns={
-    #         COLNAME_BEFUNDTEXT: COLNAME_BEFUNDTEXT + "_raw",
-    #         "CONTENT_clean": COLNAME_BEFUNDTEXT,
-    #     },
-    #     inplace=True
-    # )
-    # print(df_all_relevant.columns)
+    df_all_relevant['assessment'] = np.where(
+        df_all_relevant['has_assessment'] == 1,
+        df_all_relevant[COLNAME_BEFUNDTEXT].str.split(
+            "Beurteilung:", n=1
+        ).str.get(1).str.replace('_x000D_', '').str.strip(),
+        ""
+    )
+
+    df_all_relevant['CONTENT_clean'] = df_all_relevant[
+        COLNAME_BEFUNDTEXT
+    ].str.replace('_x000D_', '').str.strip()
+
+    df_all_relevant.rename(
+        columns={
+            COLNAME_BEFUNDTEXT: COLNAME_BEFUNDTEXT + "_raw",
+            "CONTENT_clean": COLNAME_BEFUNDTEXT,
+        },
+        inplace=True
+    )
+    print(df_all_relevant.columns)
 
     print(
         f"{df_all_relevant['has_assessment'].sum()} / {len(df_all_relevant)} ("
